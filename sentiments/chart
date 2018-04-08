@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+import matplotlib.pyplot as plt
+import os
+import sys
+
+import helpers
+from analyzer import Analyzer
+
+
+def main():
+
+    # Ensure proper usage
+    if len(sys.argv) != 2:
+        sys.exit("Usage: ./chart @screen_name")
+    screen_name = sys.argv[1].lstrip("@")
+
+    # Get tweets
+    tweets = helpers.get_user_timeline(screen_name)
+    if not tweets:
+        sys.exit(f"No tweets for @{screen_name}.")
+
+    # Instantiate analyzer
+    analyzer = Analyzer()
+
+    # Analyze tweets
+    positive, negative, neutral = 0, 0, 0
+    for tweet in tweets:
+
+        # Score tweet
+        score = analyzer.analyze(tweet)
+        if score > 0.0:
+            positive += 1
+        elif score < 0.0:
+            negative += 1
+        else:
+            neutral += 1
+
+    # Data for chart
+    total = positive + negative + neutral
+    sizes = [positive / total, negative / total, neutral / total]
+
+    # Labels for chart
+    labels = "Positive", "Negative", "Neutral"
+
+    # Show chart
+    figure, axes = plt.subplots()
+    axes.pie(sizes, autopct="%1.1f%%", labels=labels)
+    axes.axis("equal")  # Aspect ratio
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()

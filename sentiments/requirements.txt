@@ -1,0 +1,4 @@
+matplotlib
+nltk
+termcolor
+twython

@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+
+from termcolor import colored
+
+import helpers
+from analyzer import Analyzer
+
+
+def main():
+
+    # Ensure proper usage
+    if len(sys.argv) != 2:
+        sys.exit("Usage: ./tweets @screen_name")
+    screen_name = sys.argv[1].lstrip("@")
+
+    # Get tweets
+    tweets = helpers.get_user_timeline(screen_name, 10)
+    if not tweets:
+        sys.exit(f"No tweets for @{screen_name}.")
+
+    # Instantiate analyzer
+    analyzer = Analyzer()
+
+    # Analyze tweets
+    for tweet in tweets:
+
+        # Score tweet
+        score = analyzer.analyze(tweet)
+
+        # Print tweet's score
+        if score > 0.0:
+            print(colored(f"{score:2d} {tweet}", "green"))
+        elif score < 0.0:
+            print(colored(f"{score:2d} {tweet}", "red"))
+        else:
+            print(colored(f"{score:2d} {tweet}", "yellow"))
+
+
+if __name__ == "__main__":
+    main()
